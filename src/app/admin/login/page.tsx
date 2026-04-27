@@ -1,4 +1,4 @@
-import { signIn } from "@/auth";
+import { LoginForm } from "./LoginForm";
 
 export default function AdminLoginPage() {
   return (
@@ -8,27 +8,7 @@ export default function AdminLoginPage() {
           <span className="font-serif text-2xl font-bold">OTR Portfolios</span>
           <p className="text-white/50 text-sm mt-1">Admin</p>
         </div>
-        <form
-          action={async (formData: FormData) => {
-            "use server";
-            await signIn("resend", formData);
-          }}
-          className="space-y-4"
-        >
-          <div>
-            <label className="label">Email address</label>
-            <input
-              name="email"
-              type="email"
-              required
-              className="input"
-              placeholder="ashton@..."
-            />
-          </div>
-          <button type="submit" className="btn-primary w-full">
-            Send magic link →
-          </button>
-        </form>
+        <LoginForm />
       </div>
     </div>
   );
