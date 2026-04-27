@@ -87,7 +87,7 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
       name: "Travis Fisher",
       role: "Head coach & mentor · Founder, Own The Rock Academy · Owner, OTR Select Tours",
       email: "academyotr@gmail.com",
-      phone: "0402 752 360",
+      phone: null,
     },
     {
       name: "Mike McDaniel",
@@ -100,7 +100,7 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
       name: "Jamal Gaines",
       role: "Coach · Impact Basketball, Las Vegas",
       email: "info@impactbball.com",
-      phone: "(725) 255-7000",
+      phone: null,
     },
   ],
 };
