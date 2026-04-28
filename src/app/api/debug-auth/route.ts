@@ -12,7 +12,18 @@ export async function GET() {
     await sql`SELECT 1`;
     dbStatus = "ok";
   } catch (e: unknown) {
-    dbStatus = "error: " + String(e);
+    const cause = (e as { cause?: unknown })?.cause;
+    dbStatus = "error: " + String(e) + " | cause: " + String(cause);
+  }
+
+  // Also test raw fetch to Neon host
+  let fetchStatus = "untested";
+  try {
+    const url = new URL(process.env.DATABASE_URL!.replace("postgresql://", "https://").split("@")[1].split("/")[0]);
+    const res = await fetch(`https://${url.hostname}`, { signal: AbortSignal.timeout(5000) });
+    fetchStatus = "reachable: " + res.status;
+  } catch (e: unknown) {
+    fetchStatus = "unreachable: " + String(e);
   }
 
   return NextResponse.json({
@@ -23,6 +34,7 @@ export async function GET() {
     resendFrom: process.env.RESEND_FROM,
     hasDbUrl: !!process.env.DATABASE_URL,
     dbStatus,
+    fetchStatus,
   });
 }
 
