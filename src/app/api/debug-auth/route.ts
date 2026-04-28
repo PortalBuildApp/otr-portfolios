@@ -3,6 +3,18 @@ import { Resend } from "resend";
 
 export async function GET() {
   const adminEmail = (process.env.ADMIN_EMAIL ?? "").trim();
+
+  // Test DB connection
+  let dbStatus = "untested";
+  try {
+    const { neon } = await import("@neondatabase/serverless");
+    const sql = neon(process.env.DATABASE_URL!);
+    await sql`SELECT 1`;
+    dbStatus = "ok";
+  } catch (e: unknown) {
+    dbStatus = "error: " + String(e);
+  }
+
   return NextResponse.json({
     hasAdminEmail: !!adminEmail,
     adminEmail,
@@ -10,6 +22,7 @@ export async function GET() {
     hasResendKey: !!process.env.AUTH_RESEND_KEY,
     resendFrom: process.env.RESEND_FROM,
     hasDbUrl: !!process.env.DATABASE_URL,
+    dbStatus,
   });
 }
 
