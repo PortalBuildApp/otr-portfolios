@@ -20,10 +20,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      // Case-insensitive admin email check
       const adminEmail = (process.env.ADMIN_EMAIL ?? "").toLowerCase().trim();
       const userEmail = (user.email ?? "").toLowerCase().trim();
-      return userEmail === adminEmail;
+      const allowed = userEmail === adminEmail;
+      console.log("[auth] signIn callback:", { userEmail, adminEmail, allowed });
+      return allowed;
     },
     async session({ session, user }) {
       session.user.id = user.id;
