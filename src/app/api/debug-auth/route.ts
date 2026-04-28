@@ -4,26 +4,14 @@ import { Resend } from "resend";
 export async function GET() {
   const adminEmail = (process.env.ADMIN_EMAIL ?? "").trim();
 
-  // Test DB connection
+  // Test DB connection using WebSocket mode (same as app)
   let dbStatus = "untested";
   try {
-    const { neon } = await import("@neondatabase/serverless");
-    const sql = neon(process.env.DATABASE_URL!);
-    await sql`SELECT 1`;
+    const { db } = await import("@/db");
+    await db.execute("SELECT 1");
     dbStatus = "ok";
   } catch (e: unknown) {
-    const cause = (e as { cause?: unknown })?.cause;
-    dbStatus = "error: " + String(e) + " | cause: " + String(cause);
-  }
-
-  // Also test raw fetch to Neon host
-  let fetchStatus = "untested";
-  try {
-    const url = new URL(process.env.DATABASE_URL!.replace("postgresql://", "https://").split("@")[1].split("/")[0]);
-    const res = await fetch(`https://${url.hostname}`, { signal: AbortSignal.timeout(5000) });
-    fetchStatus = "reachable: " + res.status;
-  } catch (e: unknown) {
-    fetchStatus = "unreachable: " + String(e);
+    dbStatus = "error: " + String(e);
   }
 
   return NextResponse.json({
@@ -34,7 +22,6 @@ export async function GET() {
     resendFrom: process.env.RESEND_FROM,
     hasDbUrl: !!process.env.DATABASE_URL,
     dbStatus,
-    fetchStatus,
   });
 }
 
