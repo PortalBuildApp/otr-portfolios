@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { sql } from "drizzle-orm";
 
 export async function GET() {
   const adminEmail = (process.env.ADMIN_EMAIL ?? "").trim();
@@ -8,7 +9,7 @@ export async function GET() {
   let dbStatus = "untested";
   try {
     const { db } = await import("@/db");
-    await db.execute("SELECT 1");
+    await db.execute(sql`SELECT 1`);
     dbStatus = "ok";
   } catch (e: unknown) {
     dbStatus = "error: " + String(e);
