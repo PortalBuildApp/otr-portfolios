@@ -1,10 +1,12 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as schema from "./schema";
 
-// Use WebSocket mode — avoids Next.js fetch patching issues
-neonConfig.webSocketConstructor = ws;
+// Use standard pg TCP driver — works in Vercel serverless without fetch issues
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 1,
+});
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
 export const db = drizzle(pool, { schema });
