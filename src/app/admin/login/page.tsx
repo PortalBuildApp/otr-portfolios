@@ -1,38 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    try {
-      const csrf = await fetch("/api/auth/csrf").then((r) => r.json());
-      const res = await fetch("/api/auth/signin/resend", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          email,
-          csrfToken: csrf.csrfToken,
-          callbackUrl: "/admin",
-        }),
-        redirect: "manual",
-      });
-      const location = res.headers.get("location") ?? "";
-      if (location.includes("error")) {
-        setError("Sign-in failed: " + location);
-      } else {
-        setSent(true);
-      }
-    } catch (err: unknown) {
-      setError(String(err));
-    } finally {
+    const res = await fetch("/api/admin-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    if (res.ok) {
+      router.push("/admin");
+    } else {
+      setError("Wrong password. Try again.");
       setLoading(false);
     }
   }
@@ -44,34 +33,24 @@ export default function AdminLoginPage() {
           <span className="font-serif text-2xl font-bold">OTR Portfolios</span>
           <p className="text-white/50 text-sm mt-1">Admin</p>
         </div>
-        {sent ? (
-          <div className="text-center space-y-2">
-            <p className="text-white/80">Check your email for a magic link.</p>
-            <p className="text-white/40 text-sm">{email}</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label">Password</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+              placeholder="Enter admin password"
+              autoFocus
+            />
           </div>
-        ) : error ? (
-          <div className="text-center space-y-3">
-            <p className="text-red-400 text-sm break-all">{error}</p>
-            <button onClick={() => setError("")} className="text-white/40 text-sm underline">Try again</button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="label">Email address</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input"
-                placeholder="ashton@..."
-              />
-            </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? "Sending…" : "Send magic link →"}
-            </button>
-          </form>
-        )}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? "Signing in…" : "Sign in →"}
+          </button>
+        </form>
       </div>
     </div>
   );
