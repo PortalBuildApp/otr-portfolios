@@ -1,9 +1,8 @@
-import { auth } from "@/auth";
 import { db } from "@/db";
-import { orders, intakeResponses, athletes } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { orders } from "@/db/schema";
+import { desc } from "drizzle-orm";
 import Link from "next/link";
-import { signOut } from "@/auth";
+import SignOutButton from "./SignOutButton";
 import { formatCents } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -27,7 +26,6 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default async function AdminDashboard() {
-  const session = await auth();
 
   const allOrders = await db
     .select()
@@ -43,16 +41,7 @@ export default async function AdminDashboard() {
     <div className="min-h-screen bg-neutral-950 text-white">
       <div className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <span className="font-serif text-xl font-bold">OTR Portfolios — Admin</span>
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/admin/login" });
-          }}
-        >
-          <button className="text-sm text-white/40 hover:text-white/60 transition-colors">
-            Sign out
-          </button>
-        </form>
+        <SignOutButton />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
