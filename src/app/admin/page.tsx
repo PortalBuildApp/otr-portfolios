@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { db } from "@/db";
-import { orders } from "@/db/schema";
+import { orders, athletes } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
 import SignOutButton from "./SignOutButton";
@@ -28,13 +28,18 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 type Order = typeof orders.$inferSelect;
+type Athlete = typeof athletes.$inferSelect;
 
 export default async function AdminDashboard() {
   let allOrders: Order[] = [];
+  let allAthletes: Athlete[] = [];
   let dbError: string | null = null;
 
   try {
-    allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+    [allOrders, allAthletes] = await Promise.all([
+      db.select().from(orders).orderBy(desc(orders.createdAt)),
+      db.select().from(athletes).orderBy(desc(athletes.lastUpdatedAt)),
+    ]);
   } catch (e) {
     dbError = String(e);
   }
@@ -74,6 +79,52 @@ export default async function AdminDashboard() {
             value={formatCents(travisOwed)}
             highlight
           />
+        </div>
+
+        {/* Portfolios */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Portfolios</h2>
+            <Link href="/admin/athletes/new" className="btn-primary text-sm px-4 py-2">
+              + New Portfolio
+            </Link>
+          </div>
+          <div className="card overflow-hidden">
+            {allAthletes.length === 0 ? (
+              <div className="px-4 py-8 text-center text-white/30 text-sm">
+                No portfolios yet.{" "}
+                <Link href="/admin/athletes/new" className="text-brand-400 hover:text-brand-300">
+                  Create one →
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {allAthletes.map((a) => (
+                  <div key={a.id} className="px-4 py-3 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                    <div>
+                      <div className="font-medium">{a.heroName}</div>
+                      <div className="text-white/40 text-xs">
+                        {a.heroPosition && <span>{a.heroPosition} · </span>}
+                        {a.heroTeam && <span>{a.heroTeam} · </span>}
+                        <span className="font-mono">/p/{a.slug}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {a.publishedAt && (
+                        <span className="text-xs text-green-400">Live</span>
+                      )}
+                      <a href={`/p/${a.slug}`} target="_blank" className="text-xs text-white/30 hover:text-white/60 transition-colors">
+                        View →
+                      </a>
+                      <Link href={`/admin/athletes/${a.id}/edit`} className="text-xs text-brand-400 hover:text-brand-300 transition-colors">
+                        Edit →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Orders table */}
