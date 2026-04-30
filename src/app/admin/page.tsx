@@ -27,12 +27,17 @@ const STATUS_COLORS: Record<string, string> = {
   refunded: "bg-red-500/20 text-red-400",
 };
 
-export default async function AdminDashboard() {
+type Order = typeof orders.$inferSelect;
 
-  const allOrders = await db
-    .select()
-    .from(orders)
-    .orderBy(desc(orders.createdAt));
+export default async function AdminDashboard() {
+  let allOrders: Order[] = [];
+  let dbError: string | null = null;
+
+  try {
+    allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+  } catch (e) {
+    dbError = String(e);
+  }
 
   // OTR attribution summary
   const otrOrders = allOrders.filter((o) => o.otrAttribution && o.status !== "refunded");
@@ -47,6 +52,11 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {dbError && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-red-400 text-sm">
+            ⚠️ Database error: {dbError}
+          </div>
+        )}
         {/* OTR attribution */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard label="Total orders" value={String(allOrders.length)} />
