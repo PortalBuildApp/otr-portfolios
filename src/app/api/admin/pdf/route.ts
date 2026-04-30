@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { isAdmin } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const ok = await isAdmin();
+  if (!ok) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { slug } = await req.json();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";

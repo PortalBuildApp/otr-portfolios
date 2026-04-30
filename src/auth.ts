@@ -1,38 +1,4 @@
-import NextAuth from "next-auth";
-import Resend from "next-auth/providers/resend";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
-import { accounts, sessions, users, verificationTokens } from "@/db/schema";
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  adapter: DrizzleAdapter(db, {
-    usersTable: users as any,
-    accountsTable: accounts as any,
-    sessionsTable: sessions as any,
-    verificationTokensTable: verificationTokens as any,
-  }),
-  providers: [
-    Resend({
-      apiKey: process.env.AUTH_RESEND_KEY,
-      from: process.env.RESEND_FROM ?? "noreply@otrportfolios.com",
-    }),
-  ],
-  callbacks: {
-    async signIn({ user }) {
-      const adminEmail = (process.env.ADMIN_EMAIL ?? "").toLowerCase().trim();
-      const userEmail = (user.email ?? "").toLowerCase().trim();
-      const allowed = userEmail === adminEmail;
-      console.log("[auth] signIn callback:", { userEmail, adminEmail, allowed });
-      return allowed;
-    },
-    async session({ session, user }) {
-      session.user.id = user.id;
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/admin/login",
-    verifyRequest: "/admin/verify",
-  },
-});
+// NextAuth has been replaced by cookie-based auth.
+// Use src/lib/admin-auth.ts for server-side auth checks.
+// Use /api/admin-auth for login/logout.
+export {};

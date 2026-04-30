@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/db";
 import { orders, athletes, outreachAssets, intakeResponses } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -16,8 +16,8 @@ interface PublishBody {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const ok = await isAdmin();
+  if (!ok) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body: PublishBody = await req.json();
   const { orderId, drafts, heroImageUrl, contactEmail, socialLinks } = body;
