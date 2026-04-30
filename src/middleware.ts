@@ -6,6 +6,13 @@ const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET!);
 const COOKIE = "otr_admin";
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Always allow login page through — no cookie check
+  if (pathname === "/admin/login") {
+    return NextResponse.next();
+  }
+
   const token = req.cookies.get(COOKIE)?.value;
 
   if (!token) {
@@ -21,5 +28,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/((?!login).*)"],
+  matcher: ["/admin/:path*"],
 };
