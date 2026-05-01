@@ -13,36 +13,41 @@ function slugify(name: string): string {
 }
 
 export async function POST(req: Request) {
-  if (!(await isAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { heroName, heroPosition, heroTeam, heroTagline, heroImageUrl, slug: rawSlug } = body;
+
+    if (!heroName) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    const slug = rawSlug ? slugify(rawSlug) : slugify(heroName);
+
+    // Check slug is unique
+    const existing = await db.select().from(athletes).where(eq(athletes.slug, slug));
+    if (existing.length > 0) {
+      return NextResponse.json({ error: `Slug "${slug}" is already taken` }, { status: 409 });
+    }
+
+    const [athlete] = await db
+      .insert(athletes)
+      .values({
+        slug,
+        heroName,
+        heroPosition: heroPosition || null,
+        heroTeam: heroTeam || null,
+        heroTagline: heroTagline || null,
+        heroImageUrl: heroImageUrl || null,
+      })
+      .returning();
+
+    return NextResponse.json({ ok: true, athlete });
+  } catch (e: unknown) {
+    console.error("POST /api/admin/athletes error:", e);
+    return NextResponse.json({ error: "Database error: " + String(e) }, { status: 500 });
   }
-
-  const body = await req.json();
-  const { heroName, heroPosition, heroTeam, heroTagline, heroImageUrl, slug: rawSlug } = body;
-
-  if (!heroName) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
-  }
-
-  const slug = rawSlug ? slugify(rawSlug) : slugify(heroName);
-
-  // Check slug is unique
-  const existing = await db.select().from(athletes).where(eq(athletes.slug, slug));
-  if (existing.length > 0) {
-    return NextResponse.json({ error: `Slug "${slug}" is already taken` }, { status: 409 });
-  }
-
-  const [athlete] = await db
-    .insert(athletes)
-    .values({
-      slug,
-      heroName,
-      heroPosition: heroPosition || null,
-      heroTeam: heroTeam || null,
-      heroTagline: heroTagline || null,
-      heroImageUrl: heroImageUrl || null,
-    })
-    .returning();
-
-  return NextResponse.json({ ok: true, athlete });
 }
