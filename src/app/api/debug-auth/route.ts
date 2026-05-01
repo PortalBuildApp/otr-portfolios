@@ -1,14 +1,37 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import { sql } from "drizzle-orm";
 
 export async function GET() {
-  const adminEmail = (process.env.ADMIN_EMAIL ?? "").trim();
-
-  // Test DB connection using WebSocket mode (same as app)
+  const dbUrl = process.env.DATABASE_URL ?? "";
+  let dbHost = "unknown";
+  let rawFetchStatus = "untested";
   let dbStatus = "untested";
+
+  // Extract hostname from DATABASE_URL
+  try {
+    const parsed = new URL(dbUrl);
+    dbHost = parsed.hostname;
+  } catch {
+    dbHost = "invalid URL";
+  }
+
+  // Test raw fetch to Neon HTTP endpoint
+  try {
+    const neonEndpoint = `https://${dbHost}/sql`;
+    const res = await fetch(neonEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: "SELECT 1", params: [] }),
+      cache: "no-store",
+    });
+    rawFetchStatus = `${res.status} ${res.statusText}`;
+  } catch (e: unknown) {
+    rawFetchStatus = "error: " + String(e);
+  }
+
+  // Test via drizzle
   try {
     const { db } = await import("@/db");
+    const { sql } = await import("drizzle-orm");
     await db.execute(sql`SELECT 1`);
     dbStatus = "ok";
   } catch (e: unknown) {
@@ -16,27 +39,11 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    hasAdminEmail: !!adminEmail,
-    adminEmail,
-    hasAuthSecret: !!process.env.AUTH_SECRET,
-    hasResendKey: !!process.env.AUTH_RESEND_KEY,
-    resendFrom: process.env.RESEND_FROM,
-    hasDbUrl: !!process.env.DATABASE_URL,
+    dbHost,
+    hasDbUrl: !!dbUrl,
+    rawFetchStatus,
     dbStatus,
+    hasAuthSecret: !!process.env.AUTH_SECRET,
+    hasAdminPassword: !!process.env.ADMIN_PASSWORD,
   });
-}
-
-export async function POST() {
-  try {
-    const resend = new Resend(process.env.AUTH_RESEND_KEY);
-    const result = await resend.emails.send({
-      from: process.env.RESEND_FROM ?? "onboarding@resend.dev",
-      to: process.env.ADMIN_EMAIL!,
-      subject: "OTR Portfolios — Resend test",
-      html: "<p>Resend is working!</p>",
-    });
-    return NextResponse.json({ ok: true, result });
-  } catch (err: unknown) {
-    return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
-  }
 }
