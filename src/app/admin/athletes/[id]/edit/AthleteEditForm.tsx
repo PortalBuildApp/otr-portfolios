@@ -43,18 +43,22 @@ export default function AthleteEditForm({ athlete }: { athlete: Athlete }) {
     setSaved(false);
     setError("");
 
-    const res = await fetch(`/api/admin/athletes/${athlete.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(`/api/admin/athletes/${athlete.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    if (res.ok) {
-      setSaved(true);
-      router.refresh();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "Save failed");
+      if (res.ok) {
+        setSaved(true);
+        router.refresh();
+      } else {
+        const data = await res.json();
+        setError(data.error ?? "Save failed");
+      }
+    } catch (err) {
+      setError("Network error — " + String(err));
     }
     setSaving(false);
   }

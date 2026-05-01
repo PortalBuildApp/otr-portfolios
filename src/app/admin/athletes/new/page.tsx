@@ -42,17 +42,22 @@ export default function NewPortfolioPage() {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/admin/athletes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch("/api/admin/athletes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      router.push(`/admin/athletes/${data.athlete.id}/edit`);
-    } else {
-      setError(data.error ?? "Something went wrong");
+      const data = await res.json();
+      if (res.ok) {
+        router.push(`/admin/athletes/${data.athlete.id}/edit`);
+      } else {
+        setError(data.error ?? "Something went wrong");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("Network error — " + String(err));
       setLoading(false);
     }
   }
