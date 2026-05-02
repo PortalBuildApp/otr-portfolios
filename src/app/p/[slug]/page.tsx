@@ -5,7 +5,6 @@ import { db } from "@/db";
 import { athletes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import PortfolioPage from "@/components/portfolio/PortfolioPage";
-import { maisonData } from "@/lib/maison-data";
 import type { Metadata } from "next";
 
 interface Props {
@@ -28,9 +27,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function getAthleteData(slug: string) {
-  // Serve the sample data for the demo slug without hitting the DB
-  if (slug === "maison-scheibel") return maisonData;
-
   const [athlete] = await db
     .select()
     .from(athletes)
