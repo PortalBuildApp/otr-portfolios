@@ -62,8 +62,12 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
 
   videoEmbeds: [
     {
-      url: "https://www.youtube.com/embed/TGfbeTkIDNk",
-      label: "32 PTS — Manila tour (17 in a single quarter)",
+      url: "https://www.youtube.com/embed/yb1B6sJOkLk",
+      label: "Maison Scheibel 32 Point Game",
+    },
+    {
+      url: "https://www.youtube.com/embed/vhIHIw78uRQ",
+      label: "Coach Jamal x Maison Scheibel",
     },
     {
       url: "https://www.youtube.com/embed/VinUgPmfqC0",
