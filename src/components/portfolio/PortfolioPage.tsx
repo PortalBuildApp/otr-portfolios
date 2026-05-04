@@ -37,6 +37,7 @@ interface PortfolioData {
   contactEmail?: string | null;
   socialLinks?: Record<string, string> | null;
   coaches?: Coach[] | null;
+  promotionalNetwork?: { handle: string; description: string; url: string }[] | null;
 }
 
 function renderScoutMarkdown(text: string) {
@@ -258,6 +259,28 @@ export default function PortfolioPage({ data }: { data: PortfolioData }) {
                     <p className="text-xs text-white/35 italic pt-1">{c.note}</p>
                   )}
                 </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Promotional Network */}
+        {data.promotionalNetwork && data.promotionalNetwork.length > 0 && (
+          <section>
+            <SectionLabel>Promotional Network</SectionLabel>
+            <p className="text-white/50 text-sm mb-5">A sponsorship with Maison reaches beyond his personal following. Content will be shared across these accounts.</p>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {data.promotionalNetwork.map((account, i) => (
+                <a
+                  key={i}
+                  href={account.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/[0.04] border border-white/10 hover:border-white/25 rounded-xl p-5 space-y-2 transition-colors group"
+                >
+                  <p className="font-semibold text-brand-400 group-hover:text-brand-300 transition-colors">{account.handle}</p>
+                  <p className="text-xs text-white/50 leading-relaxed">{account.description}</p>
+                </a>
               ))}
             </div>
           </section>

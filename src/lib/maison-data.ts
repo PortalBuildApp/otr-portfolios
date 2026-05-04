@@ -86,6 +86,23 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
   socialLinks: {
     instagram: "https://www.instagram.com/maison_scheibel_/",
   },
+  promotionalNetwork: [
+    {
+      handle: "@otr_tours",
+      description: "OTR Select Tours — the organisation behind Maison's international campaign",
+      url: "https://www.instagram.com/otr_tours/",
+    },
+    {
+      handle: "@ashtonscheibel_",
+      description: "OTR Portfolios founder — personal reach and direct sponsorship outreach",
+      url: "https://www.instagram.com/ashtonscheibel_/",
+    },
+    {
+      handle: "@salcedomedia",
+      description: "Independent media — has conducted interviews with Maison and covers the tours",
+      url: "https://www.instagram.com/salcedomedia/",
+    },
+  ],
   coaches: [
     {
       name: "Travis Fisher",
