@@ -19,6 +19,7 @@ interface Coach {
   email?: string | null;
   phone?: string | null;
   note?: string | null;
+  interviewUrl?: string | null;
 }
 
 interface PortfolioData {
@@ -257,6 +258,11 @@ export default function PortfolioPage({ data }: { data: PortfolioData }) {
                   )}
                   {c.note && (
                     <p className="text-xs text-white/35 italic pt-1">{c.note}</p>
+                  )}
+                  {c.interviewUrl && (
+                    <a href={c.interviewUrl} target="_blank" rel="noopener noreferrer" className="block text-sm text-brand-400 hover:text-brand-300 transition-colors pt-1">
+                      Watch interview →
+                    </a>
                   )}
                 </div>
               ))}

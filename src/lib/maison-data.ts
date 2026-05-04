@@ -66,10 +66,6 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
       label: "Maison Scheibel 32 Point Game",
     },
     {
-      url: "https://www.youtube.com/embed/vhIHIw78uRQ",
-      label: "Coach Jamal x Maison Scheibel",
-    },
-    {
       url: "https://www.youtube.com/embed/VinUgPmfqC0",
       label: "Manila tour highlight reel — OTR 2026",
     },
@@ -122,6 +118,7 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
       role: "Coach · Impact Basketball, Las Vegas",
       email: "info@impactbball.com",
       phone: null,
+      interviewUrl: "https://www.instagram.com/reel/DWtwrgIDKbX/",
     },
   ],
 };
