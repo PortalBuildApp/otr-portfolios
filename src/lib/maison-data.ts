@@ -90,7 +90,7 @@ He's back in Australia now. Fit, focused, and done with proving himself at the l
     },
     {
       handle: "@ashtonscheibel_",
-      description: "OTR Portfolios founder — personal reach and direct sponsorship outreach",
+      description: "OTR Media — personal reach and direct sponsorship outreach",
       url: "https://www.instagram.com/ashtonscheibel_/",
     },
     {
