@@ -292,11 +292,8 @@ export default function PortfolioPage({ data }: { data: PortfolioData }) {
       </div>
 
       <footer className="border-t border-white/10 py-8 px-6 mt-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-white/25">
+        <div className="max-w-6xl mx-auto flex justify-center text-xs text-white/25">
           <span>Portfolio by OTR Portfolios</span>
-          <Link href="/" className="hover:text-white/40 transition-colors">
-            Get your portfolio →
-          </Link>
         </div>
       </footer>
     </article>
